@@ -3,16 +3,18 @@ import { Button } from "react-bootstrap";
 
 import AppHeader from "../components/AppHeader";
 import Task from "../components/Task";
+import AddNewTask from "../components/AddNewTask";
 
 const Home = () => {
   return (
     <div>
       <AppHeader />
-      <section className="add-new-task">
+      {/* <section className="add-new-task">
         <Button style={{ margin: "30px" }} variant="success">
           Add New Task
         </Button>
-      </section>
+      </section> */}
+      <AddNewTask />
       <section className="center-child-row">
         <ul className="main-list">
           <li>
