@@ -6,24 +6,53 @@ import {
   DropdownButton,
   ListGroup,
   ListGroupItem,
-  Form,
-  Modal,
-  Row,
-  Col,
 } from "react-bootstrap";
 
-import ListIcon from "../icons/ListIcon";
 import TickIcon from "../icons/TickIcon";
 import CancelIcon from "../icons/CancelIcon";
 import CircleIcon from "../icons/CircleIcon";
 
-const AddSubTask = ({ closeForm }) => {
+import { AuthContext } from "../utils/Auth";
+
+import ShareSheet from "./ShareSheet";
+
+import app from "../utils/fire";
+
+const db = app.firestore();
+
+const defaultTask = {
+  created: {
+    nanoseconds: 0,
+    seconds: 1590595200,
+  },
+  title: "Default",
+  owner: "Default",
+  editors: [],
+  invites: [],
+};
+
+const defaultSubTask = {
+  name: "defaul",
+  completed: false,
+};
+
+const AddSubTask = ({ closeForm, subTaskRef }) => {
   const [formValue, setFormValue] = useState("");
   console.log(closeForm);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Submitting");
+    if (subTaskRef && formValue) {
+      db.collection(subTaskRef)
+        .add({
+          completed: false,
+          name: formValue,
+          created: app.firebase_.firestore.Timestamp.now(),
+        })
+        .then(() => console.log("success"))
+        .catch((err) => console.log(err));
+    }
     closeForm();
   };
 
@@ -42,14 +71,45 @@ const AddSubTask = ({ closeForm }) => {
   );
 };
 
-const SubTask = ({ children, id, completed }) => {
+const SubTask = ({ subtask = defaultSubTask, subTaskRef }) => {
   const [isForm, setIsForm] = useState(false);
-  const [formValue, setFormValue] = useState(children);
+  const [formValue, setFormValue] = useState(subtask.name);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Submitting");
+    if (subtask.id && formValue) {
+      db.collection(subTaskRef)
+        .doc(subtask.id)
+        .update({
+          name: formValue,
+        })
+        .then(() => console.log("updated"))
+        .catch((err) => console.log(err));
+    }
     setIsForm(false);
+  };
+
+  const removeSubTask = () => {
+    if (subtask.id) {
+      db.collection(subTaskRef)
+        .doc(subtask.id)
+        .delete()
+        .then(() => console.log("deleted"))
+        .catch((err) => console.log(err));
+    }
+  };
+
+  const completeSubTask = () => {
+    if (subtask.id) {
+      db.collection(subTaskRef)
+        .doc(subtask.id)
+        .update({
+          completed: !subtask.completed,
+        })
+        .then(() => console.log("Completed changed"))
+        .catch((err) => console.log(err));
+    }
   };
 
   return (
@@ -77,16 +137,16 @@ const SubTask = ({ children, id, completed }) => {
           <button
             className="btn-no-style"
             onClick={() => setIsForm(!isForm)}
-            style={{ textDecoration: completed ? "line-through" : "" }}
+            style={{ textDecoration: subtask.completed ? "line-through" : "" }}
           >
-            {children}
+            {subtask.name}
           </button>
           <div style={{ display: "flex" }}>
-            <button className="icon-button">
+            <button className="icon-button" onClick={removeSubTask}>
               <CancelIcon />
             </button>
-            <button className="icon-button">
-              {completed ? <CircleIcon /> : <TickIcon />}
+            <button className="icon-button" onClick={completeSubTask}>
+              {subtask.completed ? <CircleIcon /> : <TickIcon />}
             </button>
           </div>
         </div>
@@ -95,105 +155,85 @@ const SubTask = ({ children, id, completed }) => {
   );
 };
 
-const ShareSheet = ({ showModal, closeModal }) => {
-  const [isEdit, setIsEdit] = useState(false);
-  const [inviteSearch, setInviteSearch] = useState("");
-
-  const addInvite = (e) => {
-    e.preventDefault();
-    console.log(inviteSearch);
-  };
-
-  return (
-    <Modal show={showModal} onHide={closeModal} size="lg">
-      <Modal.Header closeButton>
-        <Modal.Title>Share</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <div style={{ marginBottom: "1rem" }}>
-          <Button size="sm" onClick={() => setIsEdit(!isEdit)}>
-            {isEdit ? "Done" : "Edit"}
-          </Button>
-        </div>
-        <ListGroup>
-          <ListGroupItem>
-            <div className="flex-space-between">
-              User
-              <Button size="sm" variant="outline-primary" disabled>
-                Owner
-              </Button>
-            </div>
-          </ListGroupItem>
-          <ListGroupItem>
-            <div className="flex-space-between">
-              User
-              {isEdit ? (
-                <Button size="sm">Remove</Button>
-              ) : (
-                <Button size="sm" variant="outline-primary" disabled>
-                  Editor
-                </Button>
-              )}
-            </div>
-          </ListGroupItem>
-          <ListGroupItem>
-            <div className="flex-space-between">
-              User
-              {isEdit ? (
-                <Button size="sm">Remove</Button>
-              ) : (
-                <Button size="sm" variant="outline-danger" disabled>
-                  Invited
-                </Button>
-              )}
-            </div>
-          </ListGroupItem>
-        </ListGroup>
-        <div style={{ marginTop: "1rem" }}>
-          <Form onSubmit={addInvite}>
-            <Form.Group as={Row}>
-              <Col sm={10}>
-                <Form.Control
-                  type="email"
-                  placeholder="Enter Email"
-                  onChange={(e) => setInviteSearch(e.target.value)}
-                  value={inviteSearch}
-                />
-              </Col>
-              <Button size="sm" onClick={addInvite}>
-                Invite
-              </Button>
-            </Form.Group>
-          </Form>
-        </div>
-      </Modal.Body>
-      {/* <Modal.Footer>
-        <Button variant="success" onClick={closeModal}>
-          Add Task
-        </Button>
-      </Modal.Footer> */}
-    </Modal>
-  );
-};
-
-const Task = ({ title = "Something" }) => {
+const Task = ({ data = defaultTask }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [data, setData] = useState([
-    { subtask: "Do Somehting", id: 1, completed: true },
-    { subtask: "Something Else", id: 2, completed: false },
-  ]);
+  const [subtasks, setSubstasks] = useState([]);
+
+  const { currentUser } = useContext(AuthContext);
+  const subTaskRef = `tasks/${data.id}/subtasks`;
+
+  useEffect(() => {
+    console.log("Starting");
+    console.log(data.id);
+    // console.log(app.firebase_.firestore.Timestamp.now());
+    const unsubscribe = getSubtask();
+    return () => {
+      unsubscribe();
+      console.log("Im Out");
+    };
+  }, [data]);
+
+  const getSubtask = () => {
+    console.log("Getting Subtasks", data.id);
+    if (data.id) {
+      return db
+        .collection(subTaskRef)
+        .orderBy("created")
+        .onSnapshot(
+          (querySnapshot) => {
+            const newData = querySnapshot.docs.map((subtask) => ({
+              ...subtask.data(),
+              id: subtask.id,
+            }));
+            console.log(newData, data.id);
+            setSubstasks(newData);
+          },
+          (err) => console.log(err)
+        );
+    }
+  };
+
+  const removeTask = () => {
+    if (data.id) {
+      if (currentUser.uid === data.owner) {
+        db.collection("tasks")
+          .doc(data.id)
+          .delete()
+          .then(() => console.log("I deleted My Self"))
+          .catch((err) => console.log(err));
+      } else {
+        removeFromEditor();
+      }
+    }
+  };
+
+  const removeFromEditor = () => {
+    const editorArray = data.editors;
+    const indexOfMe = editorArray.indexOf(currentUser.uid);
+    const newEditor = [...editorArray];
+    newEditor.splice(indexOfMe, 1);
+    console.log(newEditor);
+    db.collection("tasks")
+      .doc(data.id)
+      .update({
+        editors: newEditor,
+      })
+      .then(() => console.log("deleted as editor"))
+      .catch((err) => console.log(err));
+  };
 
   return (
     <Card style={{ marginBottom: "25px", width: "400px" }}>
       <ShareSheet
         showModal={showModal}
         closeModal={() => setShowModal(false)}
+        data={data}
       />
       <Card.Header style={{ display: "flex", justifyContent: "space-between" }}>
         <button className="btn-no-style" onClick={() => setIsOpen(!isOpen)}>
-          {title}
+          {data.title}
         </button>
         <DropdownButton
           id="dropdown-item-button"
@@ -212,7 +252,7 @@ const Task = ({ title = "Something" }) => {
           </Dropdown.Item>
           <Dropdown.Divider />
           <Dropdown.Item as="div">
-            <Button variant="danger" block size="sm">
+            <Button variant="danger" block size="sm" onClick={removeTask}>
               REMOVE
             </Button>
           </Dropdown.Item>
@@ -221,16 +261,17 @@ const Task = ({ title = "Something" }) => {
       {isOpen && (
         <Card.Body>
           <ListGroup>
-            {data.map((task) => (
-              <ListGroupItem key={task.id}>
-                <SubTask id={task.id} completed={task.completed}>
-                  {task.subtask}
-                </SubTask>
+            {subtasks.map((subtask, index) => (
+              <ListGroupItem key={index}>
+                <SubTask subtask={subtask} subTaskRef={subTaskRef} />
               </ListGroupItem>
             ))}
             {isAdding && (
               <ListGroupItem>
-                <AddSubTask closeForm={() => setIsAdding(false)} />
+                <AddSubTask
+                  closeForm={() => setIsAdding(false)}
+                  subTaskRef={subTaskRef}
+                />
               </ListGroupItem>
             )}
           </ListGroup>

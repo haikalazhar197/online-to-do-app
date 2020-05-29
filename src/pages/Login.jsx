@@ -20,7 +20,7 @@ const Login = ({ history }) => {
   const signinGoogle = async () => {
     const googleAuthProvider = new app.firebase_.auth.GoogleAuthProvider();
     try {
-      await app.auth().signInWithPopup(googleAuthProvider);
+      await app.auth().signInWithRedirect(googleAuthProvider);
     } catch (err) {
       console.log(err);
     }
@@ -36,7 +36,7 @@ const Login = ({ history }) => {
         <Card.Header
           style={{ display: "flex", justifyContent: "space-between" }}
         >
-          <div>Login to My App</div>
+          <div>Login to ToDo App</div>
           <Link to="/">Back</Link>
         </Card.Header>
         <Card.Body style={{ margin: "0 auto" }}>
