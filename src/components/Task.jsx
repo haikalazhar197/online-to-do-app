@@ -38,11 +38,9 @@ const defaultSubTask = {
 
 const AddSubTask = ({ closeForm, subTaskRef }) => {
   const [formValue, setFormValue] = useState("");
-  console.log(closeForm);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitting");
     if (subTaskRef && formValue) {
       db.collection(subTaskRef)
         .add({
@@ -165,18 +163,18 @@ const Task = ({ data = defaultTask }) => {
   const subTaskRef = `tasks/${data.id}/subtasks`;
 
   useEffect(() => {
-    console.log("Starting");
-    console.log(data.id);
+    // console.log("Starting");
+    // console.log(data.id);
     // console.log(app.firebase_.firestore.Timestamp.now());
     const unsubscribe = getSubtask();
     return () => {
       unsubscribe();
-      console.log("Im Out");
+      // console.log("Im Out");
     };
   }, [data]);
 
   const getSubtask = () => {
-    console.log("Getting Subtasks", data.id);
+    // console.log("Getting Subtasks", data.id);
     if (data.id) {
       return db
         .collection(subTaskRef)
@@ -187,7 +185,7 @@ const Task = ({ data = defaultTask }) => {
               ...subtask.data(),
               id: subtask.id,
             }));
-            console.log(newData, data.id);
+            // console.log(newData, data.id);
             setSubstasks(newData);
           },
           (err) => console.log(err)
@@ -214,7 +212,7 @@ const Task = ({ data = defaultTask }) => {
     const indexOfMe = editorArray.indexOf(currentUser.uid);
     const newEditor = [...editorArray];
     newEditor.splice(indexOfMe, 1);
-    console.log(newEditor);
+    // console.log(newEditor);
     db.collection("tasks")
       .doc(data.id)
       .update({

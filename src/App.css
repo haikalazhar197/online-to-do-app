@@ -159,3 +159,13 @@ section {
   display: flex;
   justify-content: center;
 }
+
+.user-sheet {
+  display: flex;
+}
+
+.user-sheet img {
+  margin: 0px 15px 0px 0px;
+  width: 30px;
+  border-radius: 50%;
+}

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   Button,
   Modal,
@@ -22,21 +22,18 @@ const AddNewTask = () => {
 
   const { currentUser } = useContext(AuthContext);
 
-  useEffect(() => {
-    console.log("Starting");
-    return () => {
-      console.log("Out");
-    };
-  }, []);
+  // useEffect(() => {
+  //   console.log("Starting");
+  //   return () => {
+  //     console.log("Out");
+  //   };
+  // }, []);
 
   const openModal = () => {
     setShowModal(true);
   };
 
   const addToFirestore = () => {
-    console.log("adding to firestore");
-    // console.log(title);
-    // console.log(subTasks);
     const newTask = {
       title: title || "odnfsd",
       owner: currentUser.uid,
@@ -44,11 +41,11 @@ const AddNewTask = () => {
       invites: [],
       created: app.firebase_.firestore.Timestamp.now(),
     };
-    console.log(newTask, subTasks);
+    // console.log(newTask, subTasks);
     db.collection("tasks")
       .add(newTask)
       .then((doc) => {
-        console.log(doc.id);
+        // console.log(doc.id);
         subTasks.forEach((subtask) => {
           db.collection(`tasks/${doc.id}/subtasks`)
             .add({

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Spinner } from "react-bootstrap";
 import app from "./fire";
 
 export const AuthContext = React.createContext();
@@ -15,7 +16,16 @@ export const AuthProvider = ({ children }) => {
   const [pending, setPending] = useState(true);
 
   if (pending) {
-    return <div>LOADING</div>;
+    return (
+      <div
+        className="flex-center"
+        style={{ height: "100vh", marginTop: "300px" }}
+      >
+        <Spinner animation="border" role="status" variant="primary">
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+      </div>
+    );
   }
 
   return (

@@ -31,12 +31,12 @@ const AppHeader = () => {
       .where("invites", "array-contains", currentUser.uid)
       .onSnapshot(
         (querySnapshot) => {
-          console.log(querySnapshot.docs);
+          // console.log(querySnapshot.docs);
           const newData = querySnapshot.docs.map((data) => ({
             ...data.data(),
             id: data.id,
           }));
-          console.log(newData);
+          // console.log(newData);
           setData(newData);
         },
         (err) => console.log(err)
@@ -44,7 +44,7 @@ const AppHeader = () => {
   };
 
   const acceptInvite = (index) => {
-    console.log("Accepting Invite", data[index].id);
+    // console.log("Accepting Invite", data[index].id);
     // const inviteArray = data[index].invites;
     const editorArry = data[index].editors;
     const newEditors = [...editorArry, currentUser.uid];
@@ -59,7 +59,7 @@ const AppHeader = () => {
   };
 
   const declineInvite = (index) => {
-    console.log("Declining INvite", data[index].id);
+    // console.log("Declining INvite", data[index].id);
     const inviteArray = data[index].invites;
     const indexOfCurrentUser = inviteArray.indexOf(currentUser.uid);
     const newInvites = [...inviteArray];

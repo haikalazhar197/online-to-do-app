@@ -7,12 +7,20 @@ import {
   Form,
   Col,
   Row,
+  Spinner,
 } from "react-bootstrap";
 
 import app from "../utils/fire";
 import { AuthContext } from "../utils/Auth";
 
 const db = app.firestore();
+
+const defaultUser = {
+  name: "Haikal",
+  uid: "SomeiDhere",
+  img:
+    "https://lh3.googleusercontent.com/a-/AOh14Gg_y1WjT42C9jvK6TcRXBemMGJS7qhIrXHnvPnyvQ",
+};
 
 const UserCard = ({
   userId = "CnLiM9ep4gR6ZVmEiD125qWZs",
@@ -22,19 +30,13 @@ const UserCard = ({
   removeUser,
   owner,
 }) => {
-  const { currentUser } = useContext(AuthContext);
-  const [userData, setUserData] = useState({
-    name: "Haikal",
-    uid: "SomeiDhere",
-  });
+  const [userData, setUserData] = useState(defaultUser);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log("Starting to pull Data", index);
-    console.log(currentUser.uid === userId, owner);
     const unsubsribe = getUser();
     return () => {
       unsubsribe();
-      console.log("Im Out");
     };
   }, [userId]);
 
@@ -48,19 +50,32 @@ const UserCard = ({
       .doc(userId)
       .onSnapshot(
         (doc) => {
-          console.log(doc.data());
           const newUserData = {
             ...doc.data(),
           };
           setUserData(newUserData);
+          setIsLoading(false);
         },
         (err) => console.log(err)
       );
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex-center">
+        <Spinner animation="border" role="status" variant="success">
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-space-between">
-      {userData.name}
+      <div className="user-sheet">
+        <img src={userData.img} alt="user" />
+        {userData.name}
+      </div>
       {isEdit && userData.uid !== owner ? (
         <Button size="sm" onClick={handleClick}>
           Remove
@@ -80,23 +95,14 @@ const ShareSheet = ({ showModal, closeModal, data }) => {
   const [placeholder, setPlaceholder] = useState("Enter Email");
   const { currentUser } = useContext(AuthContext);
 
-  useEffect(() => {
-    console.log(data);
-    return () => {
-      console.log("Im Out");
-    };
-  }, [data, showModal]);
-
   const addInvite = (e) => {
     e.preventDefault();
     db.collection("users")
       .where("email", "==", inviteSearch)
       .get()
       .then((querySnapshot) => {
-        console.log(querySnapshot.docs);
         if (querySnapshot.docs.length) {
           const userid = querySnapshot.docs[0].data().uid;
-          console.log(userid);
           addToInviteList(userid);
         } else {
           setInviteSearch("");
@@ -104,7 +110,6 @@ const ShareSheet = ({ showModal, closeModal, data }) => {
         }
       })
       .catch((err) => console.log(err));
-    console.log(inviteSearch);
   };
 
   const addToInviteList = (userid) => {
@@ -145,7 +150,7 @@ const ShareSheet = ({ showModal, closeModal, data }) => {
   };
 
   const deleteInvite = (index) => {
-    console.log("deleting INvited user", index);
+    console.log("deleting Invited user", index);
     const inviteArray = data.invites;
     const newInvites = [...inviteArray];
     newInvites.splice(index, 1);
@@ -173,12 +178,11 @@ const ShareSheet = ({ showModal, closeModal, data }) => {
         </div>
         <ListGroup>
           {data.editors.map((editor, index) => (
-            <ListGroupItem>
+            <ListGroupItem key={index}>
               <UserCard
                 userId={editor}
                 isEdit={isEdit}
                 type="Editor"
-                key={index}
                 index={index}
                 removeUser={deleteEditor}
                 owner={data.owner}
@@ -189,12 +193,11 @@ const ShareSheet = ({ showModal, closeModal, data }) => {
         {!!data.invites.length && (
           <ListGroup>
             {data.invites.map((invitee, index) => (
-              <ListGroupItem>
+              <ListGroupItem key={index}>
                 <UserCard
                   userId={invitee}
                   isEdit={isEdit}
                   type="Invited"
-                  key={index}
                   index={index}
                   removeUser={deleteInvite}
                   owner={data.owner}
