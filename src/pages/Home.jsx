@@ -1,14 +1,18 @@
 import React, { useEffect, useState, useContext } from "react";
 
+//Import bootstrap components
 import { Spinner } from "react-bootstrap";
 
+//Import components
 import AppHeader from "../components/AppHeader";
 import Task from "../components/Task";
 import AddNewTask from "../components/AddNewTask";
 
+//Import utilities
 import app from "../utils/fire";
 import { AuthContext } from "../utils/Auth";
 
+//Assign database object
 const db = app.firestore();
 
 const Home = () => {
@@ -17,15 +21,19 @@ const Home = () => {
   const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
-    // console.log("Hello");
-    // console.log(currentUser.uid);
+    //Retieve data
     const unsubscribe = getData();
+
     return () => {
       console.trace("Im Out");
+
+      //Detach the listener -- !!important
       unsubscribe();
     };
   }, []);
 
+  //Function to attach data listener -- returns a unsubscribe method
+  //onSnapshot receive and listens for data
   const getData = () => {
     if (currentUser.uid) {
       return db
@@ -40,7 +48,6 @@ const Home = () => {
             }));
             setData(newData);
             setIsLoading(false);
-            // console.log(newData);
           },
           (err) => console.log(err)
         );

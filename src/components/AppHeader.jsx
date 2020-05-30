@@ -69,7 +69,7 @@ const AppHeader = () => {
       .update({
         invites: newInvites,
       })
-      .then(() => console.log("Declined"))
+      .then(() => console.log("Deleted from invites array"))
       .catch((err) => console.log(err));
   };
 

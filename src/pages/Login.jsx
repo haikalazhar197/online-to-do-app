@@ -1,4 +1,7 @@
-import React, { useContext, useEffect } from "react";
+//The Login Page
+//Logs in the user using google signin available from firebase as an AuthProvider from app.firebase_.auth.GoogleAuthProvider
+
+import React, { useContext } from "react";
 import { Button, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router";
@@ -10,15 +13,12 @@ import app from "../utils/fire";
 const Login = ({ history }) => {
   const { currentUser } = useContext(AuthContext);
 
-  useEffect(() => {
-    console.log(app.firebase_);
-    return () => {
-      console.log("Im Out");
-    };
-  }, []);
-
+  //Google Signin function
   const signinGoogle = async () => {
+    //Create new Auth Provider
     const googleAuthProvider = new app.firebase_.auth.GoogleAuthProvider();
+
+    //Try to signin the user with redirect
     try {
       await app.auth().signInWithRedirect(googleAuthProvider);
     } catch (err) {
@@ -26,8 +26,10 @@ const Login = ({ history }) => {
     }
   };
 
+  //if already signin go to home at path = /
   if (!!currentUser) {
     history.replace("/");
+    return null;
   }
 
   return (
@@ -49,4 +51,5 @@ const Login = ({ history }) => {
   );
 };
 
+//Exports with Router to get history object
 export default withRouter(Login);
