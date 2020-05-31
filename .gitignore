@@ -4,7 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
-/utils/fire.js
+src/utils/fire.js
 
 # testing
 /coverage

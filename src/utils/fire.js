@@ -5,6 +5,7 @@ import "firebase/auth"; //Enable Auth
 import "firebase/firestore"; //Enable Firestore
 
 //Initialize app with credentials
+
 const app = firebase.initializeApp({
   apiKey: "AIzaSyAzK048PvWrjEJ8lue6Imezpz1G1bzYP6Q",
   authDomain: "online-to-do.firebaseapp.com",
