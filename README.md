@@ -42,7 +42,7 @@ Refer to [Firebase Docs](https://firebase.google.com/docs/) from full guide
 1. Go to firebase console and create project
 2. Under project settings click add app
 3. Copy the firebase sdk snippet and use this to initialize your app
-4. NOTE -- Requires cloud functions to work see Code at:
+4. NOTE -- Requires cloud functions to work see Code at: [Cloud Functions](https://github.com/haikalazhar197/online-to-do-cloud-functions)
 
 ## Built With
 
