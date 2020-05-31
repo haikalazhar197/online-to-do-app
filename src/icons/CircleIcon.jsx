@@ -14,6 +14,7 @@ const CircleIcon = () => {
       viewBox="0 0 512 512"
       style={{ enableBackground: "new 0 0 512 512" }}
       xmlSpace="preserve"
+      fill={"#36494E"}
     >
       <g>
         <g>

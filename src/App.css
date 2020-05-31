@@ -167,5 +167,6 @@ section {
 .user-sheet img {
   margin: 0px 15px 0px 0px;
   width: 30px;
+  height: 30px;
   border-radius: 50%;
 }

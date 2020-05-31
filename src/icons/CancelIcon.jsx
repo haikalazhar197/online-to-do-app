@@ -14,6 +14,7 @@ const CancelIcon = () => {
       viewBox="0 0 512.001 512.001"
       style={{ enableBackground: "new 0 0 512.001 512.001" }}
       xmlSpace="preserve"
+      fill={"#36494E"}
     >
       <g>
         <g>
