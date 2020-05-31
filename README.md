@@ -15,7 +15,7 @@ An online to do application built with react
 1. Clone the repository
 
 ```sh
-$ git clone
+$ git clone https://github.com/haikalazhar197/online-to-do-app.git
 ```
 
 2. Install Dependencies
